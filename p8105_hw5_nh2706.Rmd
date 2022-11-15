@@ -33,22 +33,32 @@ skimr::skim(raw_homicide_df)
 # Problem 3
 
 ```{r}
+
 n = 30
 sd = 5
 
-mean_list = list(0,1,2,3,4,5,6)
+true_mean = 0:6
 
 dataset = function(x) {
   rnorm(n, x, sd)}
 
-output = vector("list", length = 5000)
-final = vector("list", length = 5000)
+output = vector("list", length = 50)
+inter <- data.frame(matrix(ncol = 2, nrow = 50))
+colnames(inter) <- c('true_mean', 'p-value')
 
-for (i in 1:5000) {
-  output[[i]] = dataset(0)
-  a = broom::tidy(t.test(output[[i]]))
-  final[[i]] = c(a[[1]],a[[3]])
-}
+
+
+combine_function = function(y){
+  inter2 = list()
+  for (i in 1:50) {
+    output[[i]] = dataset(y)
+    a = broom::tidy(t.test(output[[i]]))
+    inter[i,1] = a[[1]]
+    inter[i,2] = a[[3]]}
+  inter2 = rbind(inter2, inter)}
+
+final = map(true_mean, combine_function)
 ```
+
 
 
