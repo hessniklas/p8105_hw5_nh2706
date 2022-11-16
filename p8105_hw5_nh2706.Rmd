@@ -23,9 +23,31 @@ Solutions provided!
 
 # Problem 2
 
+### Import Data & Initial Description
 ```{r}
 raw_homicide_df = read_csv("./data/homicide-data.csv", na = c("","Unknown"))
-skimr::skim(raw_homicide_df)
+```
+
+The raw data has `r ncol(raw_homicide_df)` variables and `r nrow(raw_homicide_df)` observations. Key variables include `r names(raw_homicide_df[2:8])`.
+
+### Summarize Homicides by City
+```{r}
+homicide_df = raw_homicide_df %>%
+  mutate(city_state = str_c(city, state, sep = ", "),
+         solution = ifelse(disposition == "Closed by arrest", "Solved", "Unsolved")) %>%
+  group_by(city_state) %>%
+  summarize(n = n(),
+            unsolved = sum(solution == "Unsolved")) %>%
+  knitr::kable()
+
+homicide_df
+
+```
+
+### Himicides in Baltimore - Detail
+
+```{r}
+
 ```
 
 
@@ -124,8 +146,3 @@ Comparison_plot + Comparison_reject
 
 
 ```
-
-```{r}
-
-```
-
