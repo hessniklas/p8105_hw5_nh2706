@@ -43,8 +43,8 @@ dataset = function(x) {
   rnorm(n, x, sd)}
 
 output = vector("list", length = 50)
-inter <- data.frame(matrix(ncol = 2, nrow = 50))
-colnames(inter) <- c('true_mean', 'p-value')
+inter <- data.frame(matrix(ncol = 3, nrow = 50))
+colnames(inter) <- c('true_mean', 'sample_mean', 'p-value')
 
 
 
@@ -53,12 +53,44 @@ combine_function = function(y){
   for (i in 1:50) {
     output[[i]] = dataset(y)
     a = broom::tidy(t.test(output[[i]]))
-    inter[i,1] = a[[1]]
-    inter[i,2] = a[[3]]}
+    inter[i,1] = y
+    inter[i,2] = a[[1]]
+    inter[i,3] = a[[3]]}
   inter2 = rbind(inter2, inter)}
 
 final = map(true_mean, combine_function)
 ```
 
+```{r}
 
+df_final = data.frame(c(1:50),final[[1]])
+for (i in 2:7) {
+  df = data.frame(c(1:50),final[[i]])
+  df_final = rbind(df_final, df)
+  }
+
+df_final = df_final %>%
+  mutate(reject = ifelse(p.value < 0.05, TRUE, FALSE))
+
+```
+
+
+
+```{r}
+reject_plot = df_final %>%
+  group_by(true_mean) %>% 
+  summarize(power = sum(reject)/50) %>% 
+  ggplot(aes(x = true_mean, y = power)) +
+  geom_point(aes(colour = true_mean)) +
+  geom_line(alpha = 0.3) +
+  labs(x = "True Mean", 
+       y = "Proportion of times  null was rejected")
+
+reject_plot
+```
+
+
+```{r}
+
+```
 
