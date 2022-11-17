@@ -39,6 +39,7 @@ homicide_df = raw_homicide_df %>%
   mutate(city_state = str_c(city, state, sep = ", "),
          solution = ifelse(disposition == "Closed by arrest", "Solved", "Unsolved")) %>%
   group_by(city_state) %>%
+  filter(city_state != "Tulsa, AL") %>% #Excluded Tulsa, as it is not real and only has 1 observation.
   summarize(n = n(),
             unsolved = sum(solution == "Unsolved"))
 
